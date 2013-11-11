@@ -1,0 +1,23 @@
+<package>
+  <name>force_torque_tools</name>
+  <version>1.0.0</version>
+  <description>
+    Tools for gravity compensation and force-torque sensor calibration.
+  </description>
+  <maintainer email="fevb@kth.se">Francisco Vina</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/force_torque_tools</url>
+
+  <author email="fevb@kth.se">Francisco Vina</author>
+  <maintainer email="fevb@kth.se">Francisco Vina</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>force_torque_sensor_calib</run_depend>
+  <run_depend>gravity_compensation</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
