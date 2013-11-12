@@ -46,33 +46,19 @@ GravityCompensationParams::~GravityCompensationParams()
 
 }
 
-bool GravityCompensationParams::setBias(const std::vector<double> &bias)
+void GravityCompensationParams::setBias(const Eigen::Matrix<double, 6, 1> &bias)
 {
-    if(bias.size()!=6)
-    {
-        ROS_ERROR("Incorrect bias parameter size!");
-        return false;
-    }
-
-    m_bias = bias;
-    return true;
+	m_bias = bias;
 }
 
-std::vector<double> GravityCompensationParams::getBias()
+Eigen::Matrix<double, 6, 1> GravityCompensationParams::getBias()
 {
     return m_bias;
 }
 
-bool GravityCompensationParams::setGripperMass(const double &gripper_mass)
+void GravityCompensationParams::setGripperMass(const double &gripper_mass)
 {
-    if(gripper_mass<=0.0)
-    {
-        ROS_ERROR("Invalid mass parameter ( < 0)!");
-        return false;
-    }
-
-    m_gripper_mass = gripper_mass;
-    return true;
+	m_gripper_mass = gripper_mass;
 }
 
 double GravityCompensationParams::getGripperMass()
@@ -80,10 +66,9 @@ double GravityCompensationParams::getGripperMass()
     return m_gripper_mass;
 }
 
-bool GravityCompensationParams::setGripperCOM(const tf::StampedTransform &gripper_com)
+void GravityCompensationParams::setGripperCOM(const tf::StampedTransform &gripper_com)
 {
     m_gripper_com = gripper_com;
-    return true;
 }
 
 tf::StampedTransform GravityCompensationParams::getGripperCOM()

@@ -38,6 +38,7 @@
 
 #include <vector>
 #include <tf/transform_datatypes.h>
+#include <eigen3/Eigen/Core>
 
 class GravityCompensationParams
 {
@@ -49,30 +50,31 @@ public:
 
     // set/get the F/T sensor bias
     // used to 'zero' the F/T sensor signal
-    bool setBias(const std::vector<double> &bias);
-    std::vector<double> getBias();
+    void setBias(const Eigen::Matrix<double, 6, 1> &bias);
+    Eigen::Matrix<double, 6, 1> getBias();
 
     // set/get the mass of the gripper
     // used for compensating gravity
-    bool setGripperMass(const double &gripper_mass);
+    void setGripperMass(const double &gripper_mass);
     double getGripperMass();
 
     // set/get the COM of the gripper
-    // used for compensating gravity
-    // compensation assumes that the gripper COM is fixed
+    // Used for compensating gravity.
+    // Compensation assumes that the gripper COM is fixed
     // with respect to the F/T sensor
-    bool setGripperCOM(const tf::StampedTransform &gripper_com);
+    void setGripperCOM(const tf::StampedTransform &gripper_com);
     tf::StampedTransform getGripperCOM();
 
 private:
 
     // 6 element bias vector
-    std::vector<double> m_bias;
+    Eigen::Matrix<double, 6, 1> m_bias;
 
     // the mass of the gripper
     double m_gripper_mass;
 
-    // location of the center of mass of the gripper
+    // (fixed) pose of the center of mass of the gripper
+    // with respect to the F/T sensor
     tf::StampedTransform m_gripper_com;
 
 };
