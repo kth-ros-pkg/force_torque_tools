@@ -38,6 +38,7 @@
 #include <sensor_msgs/Imu.h>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
+#include <tf_conversions/tf_eigen.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 #include <eigen_conversions/eigen_msg.h>
@@ -202,9 +203,13 @@ public:
 				(double)gripper_com_pose(4),
 				(double)gripper_com_pose(5));
 
-		gripper_com = tf::Transform(q, p);
+		gripper_com = tf::StampedTransform(tf::Transform(q, p),
+				ros::Time::now(),
+				gripper_com_frame_id,
+				gripper_com_child_frame_id);
 
-
+		// get the publish frequency for the gripper
+		// center of mass tf
 		n_.param("gripper_com_broadcast_frequency",
 				m_gripper_com_broadcast_frequency, 100.0);
 
@@ -233,24 +238,22 @@ public:
 		topicPub_ft_compensated_.publish(ft_compensated);
 	}
 
+	// thread function for publishing the gripper center of mass transform
 	void publish_gripper_com_tf()
 	{
-
+		static ros::Rate gripper_com_broadcast_rate(m_gripper_com_broadcast_frequency);
 		try
 		{
-			ROS_DEBUG("Publishing gripper COM tf");
-			tf::StampedTransform gripper_com = m_g_comp_params->getGripperCOM();
-			gripper_com.stamp_ = ros::Time::now();
-			tf_br_.sendTransform(gripper_com);
-			boost::this_thread::sleep(boost::posix_time::milliseconds((1/m_gripper_com_broadcast_frequency)*1000));
+			while(ros::ok())
+			{
+				tf::StampedTransform gripper_com = m_g_comp_params->getGripperCOM();
+				gripper_com.stamp_ = ros::Time::now();
+				tf_br_.sendTransform(gripper_com);
+				gripper_com_broadcast_rate.sleep();
+			}
 		}
 
 		catch(boost::thread_interrupted&)
-		{
-			return;
-		}
-
-		if(!ros::ok())
 		{
 			return;
 		}
@@ -282,7 +285,7 @@ int main(int argc, char **argv)
 	g_comp_node.n_.param("loop_frequency", loop_frequency, 1000.0);
 	ros::Rate loop_rate(loop_frequency);
 
-	// add a thread for publishing the
+	// add a thread for publishing the gripper COM transform frame
 	boost::thread t_tf(boost::bind(&GravityCompensationNode::publish_gripper_com_tf, &g_comp_node));
 
 	ros::AsyncSpinner s(2);

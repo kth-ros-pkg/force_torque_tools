@@ -1,0 +1,10 @@
+bias: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+gripper_mass: 24.0
+
+gripper_com_frame_id: f1
+
+gripper_com_child_frame_id: f2
+
+gripper_com_pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
