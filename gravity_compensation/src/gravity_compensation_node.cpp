@@ -41,6 +41,7 @@
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 #include <eigen_conversions/eigen_msg.h>
+#include <boost/thread.hpp>
 
 
 class GravityCompensationNode
@@ -201,8 +202,11 @@ public:
 				(double)gripper_com_pose(4),
 				(double)gripper_com_pose(5));
 
-		gripper_com.Transform(q, p);
+		gripper_com = tf::Transform(q, p);
 
+
+		n_.param("gripper_com_broadcast_frequency",
+				m_gripper_com_broadcast_frequency, 100.0);
 
 		m_g_comp_params->setBias(bias);
 		m_g_comp_params->setGripperMass(gripper_mass);
@@ -231,9 +235,25 @@ public:
 
 	void publish_gripper_com_tf()
 	{
-		tf::StampedTransform gripper_com = m_g_comp_params->getGripperCOM();
-		gripper_com.stamp_ = ros::Time::now();
-		tf_br_.sendTransform(gripper_com);
+
+		try
+		{
+			ROS_DEBUG("Publishing gripper COM tf");
+			tf::StampedTransform gripper_com = m_g_comp_params->getGripperCOM();
+			gripper_com.stamp_ = ros::Time::now();
+			tf_br_.sendTransform(gripper_com);
+			boost::this_thread::sleep(boost::posix_time::milliseconds((1/m_gripper_com_broadcast_frequency)*1000));
+		}
+
+		catch(boost::thread_interrupted&)
+		{
+			return;
+		}
+
+		if(!ros::ok())
+		{
+			return;
+		}
 	}
 
 private:
@@ -241,6 +261,7 @@ private:
 	GravityCompensationParams *m_g_comp_params;
 	GravityCompensation *m_g_comp;
 	sensor_msgs::Imu m_imu;
+	double m_gripper_com_broadcast_frequency;
 
 };
 
@@ -250,17 +271,30 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "gravity_compensation");
 	GravityCompensationNode g_comp_node;
 
-	// tf broadcasting frequency
-	double tf_broad_frequency;
+	if(!g_comp_node.getROSParameters())
+	{
+		ROS_ERROR("Error getting ROS parameters");
+		return 0;
+	}
 
 	// loop frequency
 	double loop_frequency;
-
-	g_comp_node.n_.param("tf_broadcast_frequency", tf_broad_frequency, 100.0);
 	g_comp_node.n_.param("loop_frequency", loop_frequency, 1000.0);
+	ros::Rate loop_rate(loop_frequency);
 
+	// add a thread for publishing the
+	boost::thread t_tf(boost::bind(&GravityCompensationNode::publish_gripper_com_tf, &g_comp_node));
 
-	// todo: add two threads, one for reading ft and imu and one for publish tf
+	ros::AsyncSpinner s(2);
+	s.start();
+
+	while(ros::ok())
+	{
+		loop_rate.sleep();
+	}
+
+	t_tf.join();
+
 
 	return 0;
 }

@@ -4,6 +4,8 @@ project(gravity_compensation)
 
 find_package(catkin REQUIRED COMPONENTS roscpp geometry_msgs sensor_msgs tf tf_conversions eigen_conversions)
 
+find_package(Boost REQUIRED COMPONENTS thread)
+
 catkin_package(
   DEPENDS eigen
   CATKIN_DEPENDS geometry_msgs sensor_msgs tf tf_conversions eigen_conversions
@@ -14,6 +16,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${Bosot_INCLUDE_DIRS}
 )
 
 link_directories(${catkin_LIBRARY_DIRS})
@@ -22,7 +25,7 @@ add_library(gravity_compensation src/gravity_compensation.cpp src/gravity_compen
 target_link_libraries(gravity_compensation ${catkin_LIBRARIES})
 
 add_executable(gravity_compensation_node src/gravity_compensation_node.cpp)
-target_link_libraries(gravity_compensation_node gravity_compensation ${catkin_LIBRARIES})
+target_link_libraries(gravity_compensation_node gravity_compensation ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 install(TARGETS gravity_compensation gravity_compensation_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
