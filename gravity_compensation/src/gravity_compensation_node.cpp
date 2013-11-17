@@ -1,5 +1,5 @@
 /*
- *  gravity_compensation.cpp
+ *  gravity_compensation_node.cpp
  *
  *  Created on: Nov 12, 2013
  *  Authors:   Francisco Viña
@@ -65,6 +65,7 @@ public:
 		n_ = ros::NodeHandle("~");
 		m_g_comp_params  = new GravityCompensationParams();
 		m_g_comp = NULL;
+		m_received_imu = false;
 
 		// subscribe to accelerometer topic and raw F/T sensor topic
 		topicSub_imu_ = n_.subscribe("imu", 1, &GravityCompensationNode::topicCallback_imu, this);
@@ -224,14 +225,29 @@ public:
 	void topicCallback_imu(const sensor_msgs::Imu::ConstPtr &msg)
 	{
 		m_imu = *msg;
+		m_received_imu = true;
 	}
 
 	void topicCallback_ft_raw(const geometry_msgs::WrenchStamped::ConstPtr &msg)
 	{
+		static int error_msg_count=0;
+
+		if(!m_received_imu)
+		{
+			return;
+		}
+
+		if((ros::Time::now()-m_imu.header.stamp).toSec() > 0.1)
+		{
+			error_msg_count++;
+			if(error_msg_count % 10==0)
+				ROS_ERROR("Imu reading too old, not able to g-compensate ft measurement");
+			return;
+		}
+
 		geometry_msgs::WrenchStamped ft_zeroed;
 		m_g_comp->Zero(*msg, ft_zeroed);
 		topicPub_ft_zeroed_.publish(ft_zeroed);
-
 
 		geometry_msgs::WrenchStamped ft_compensated;
 		m_g_comp->Compensate(ft_zeroed, m_imu, ft_compensated);
@@ -249,6 +265,7 @@ public:
 				tf::StampedTransform gripper_com = m_g_comp_params->getGripperCOM();
 				gripper_com.stamp_ = ros::Time::now();
 				tf_br_.sendTransform(gripper_com);
+
 				gripper_com_broadcast_rate.sleep();
 			}
 		}
@@ -264,6 +281,7 @@ private:
 	GravityCompensationParams *m_g_comp_params;
 	GravityCompensation *m_g_comp;
 	sensor_msgs::Imu m_imu;
+	bool m_received_imu;
 	double m_gripper_com_broadcast_frequency;
 
 };
