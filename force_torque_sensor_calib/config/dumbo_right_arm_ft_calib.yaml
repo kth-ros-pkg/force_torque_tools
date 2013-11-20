@@ -16,16 +16,14 @@ calib_file_name: 'dumbo_right_arm_ft_calib_data.yaml'
 # Name of the directory
 calib_file_dir: '~/.ros/ft_calib'
 
-
-
 # don't execute random poses
 random_poses: false
 
 # number of random poses
 number_random_poses: 0
 
-
-# [x y z r p y]
+# the poses to which to move the arm in order to calibrate the F/T sensor
+# format: [x y z r p y]  in meters, radians
 pose0: [0.486, 0.367, -0.000, 1.571, 1.571, 3.130]
 pose1: [0.486, 0.367, -0.000, 1.571, 0.8, 3.140]
 pose2: [0.486, 0.367, -0.000, 1.571, 0.4, 3.140]
@@ -61,6 +59,3 @@ pose31: [0.486, 0.367, -0.000, 2.258, -0.402, -2.726]
 pose32: [0.486, 0.367, -0.000, 2.425, -0.685, -3.043]
 pose33: [0.486, 0.367, -0.000, 2.785, -0.898, 2.742]
 pose34: [0.486, 0.367, -0.000, -2.869, -0.919, 1.958]
-
-
-

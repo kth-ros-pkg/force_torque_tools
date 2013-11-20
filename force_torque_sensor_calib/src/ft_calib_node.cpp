@@ -38,7 +38,10 @@
 #include <sstream>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
-#include <geometry_msgs/PoseStamped.h>
+#include <tf/transform_datatypes.h>
+#include <tf_conversions/tf_eigen.h>
+#include <eigen_conversions/eigen_msg.h>
+#include <geometry_msgs/Pose.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include <sensor_msgs/Imu.h>
 #include <moveit/move_group_interface/move_group.h>
@@ -178,14 +181,27 @@ public:
 				return true;
 			}
 
-			m_group->setPositionTarget((double)pose(0), (double)pose(1), (double)pose(2));
-			m_group->setRPYTarget((double)pose(3), (double)pose(4), (double)pose(5));
+			geometry_msgs::Pose pose_;
+			pose_.position.x = pose(0);
+			pose_.position.y = pose(1);
+			pose_.position.z = pose(2);
+
+			tf::Quaternion q;
+			q.setRPY((double)pose(3), (double)pose(4), (double)pose(5));
+
+			tf::quaternionTFToMsg(q, pose_.orientation);
+
+			ROS_INFO("Executing pose%s: \n", ss.str().c_str());
+			std::cout << pose << std::endl;
+			m_group->setPoseTarget(pose_);
+
 		}
 		else // or execute random poses
 		{
 			if(m_pose_counter<m_number_random_poses)
 			{
 				m_group->setRandomTarget();
+				ROS_INFO("Executing pose %d",m_pose_counter);
 			}
 
 			else
@@ -195,7 +211,7 @@ public:
 				return true;
 			}
 		}
-		ROS_INFO("Executing %s", ss.str().c_str());
+
 		m_pose_counter++;
 		m_group->move();
 		return true;
@@ -477,7 +493,7 @@ int main(int argc, char **argv)
 
 	ros::Time t_end_move_arm = ros::Time::now();
 
-	while (ft_calib_node.n_.ok())
+	while (ft_calib_node.n_.ok() && !ft_calib_node.finished())
 	{
 
 		//		Move the arm, then calibrate sensor
@@ -524,24 +540,16 @@ int main(int argc, char **argv)
 
 				std::cout << "-------------------------------------------------------------" << std::endl << std::endl << std::endl;
 
-
-			}
-
-			if(ft_calib_node.finished())
-			{
-				ft_calib_node.n_.shutdown();
 			}
 
 		}
-
-
 
 
 		ros::spinOnce();
 		loop_rate.sleep();
 	}
 
-
+	ft_calib_node.saveCalibData();
 	ros::shutdown();
 	return 0;
 }

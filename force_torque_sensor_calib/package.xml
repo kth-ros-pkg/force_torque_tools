@@ -21,7 +21,8 @@
   <build_depend>moveit_ros_planning</build_depend>
   <build_depend>moveit_ros_planning_interface</build_depend>
   <build_depend>eigen</build_depend>
-  <build_depend>orocos_kdl</build_depend>
+  <build_depend>tf_conversions</build_depend>
+  <build_depend>eigen_conversions</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>sensor_msgs</run_depend>
@@ -31,6 +32,7 @@
   <run_depend>moveit_ros_planning</run_depend>
   <run_depend>moveit_ros_planning_interface</run_depend>
   <run_depend>eigen</run_depend>
-  <run_depend>orocos_kdl</run_depend>
+  <run_depend>tf_conversions</run_depend>
+  <run_depend>eigen_conversions</run_depend>
   
 </package>
