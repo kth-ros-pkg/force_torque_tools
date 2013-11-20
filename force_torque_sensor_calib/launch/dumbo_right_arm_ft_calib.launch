@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node name="dumbo_right_arm_ft_calib" pkg="force_torque_sensor_calib" type="ft_calib_node" cwd="node" respawn="false" output="screen">
+    <rosparam command="load" file="$(find force_torque_sensor_calib)/config/dumbo_right_arm_ft_calib.yaml"/>
+    <remap from="/dumbo_right_arm_ft_calib/ft_raw" to="/right_arm_ft_sensor/ft_raw"/>
+    <remap from="/dumbo_right_arm_ft_calib/imu" to="/imu/data" />
+  </node>
+</launch>
