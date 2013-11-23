@@ -294,7 +294,6 @@ public:
 		// now dump the yaml file
 		command.clear();
 		command = std::string("rosparam dump ") + file + std::string(" /ft_calib");
-		std::cout << command;
 		std::system(command.c_str());
 	}
 
@@ -545,7 +544,7 @@ int main(int argc, char **argv)
 
 
 				std::cout << "-------------------------------------------------------------" << std::endl << std::endl << std::endl;
-
+				ft_calib_node.saveCalibData();
 			}
 
 		}

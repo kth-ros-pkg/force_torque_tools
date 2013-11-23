@@ -17,7 +17,7 @@ calib_file_name: 'dumbo_left_arm_ft_calib_data.yaml'
 calib_file_dir: '~/.ros/ft_calib'
 
 # don't execute random poses
-random_poses: true
+random_poses: false
 
 # number of random poses
 number_random_poses: 1
