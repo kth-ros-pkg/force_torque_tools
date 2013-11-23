@@ -57,12 +57,15 @@ class FTCalibNode
 
 public:
 	ros::NodeHandle n_;
+	ros::AsyncSpinner *spinner;
 	ros::Subscriber topicSub_ft_raw_;
 	ros::Subscriber topicSub_Accelerometer_;
 
 	FTCalibNode()
 	{
 		n_ = ros::NodeHandle("~");
+		spinner = new ros::AsyncSpinner(1);
+		spinner->start();
 
 
 
@@ -83,7 +86,7 @@ public:
 	~FTCalibNode()
 	{
 		saveCalibData();
-
+		delete spinner;
 		delete m_group;
 		delete m_ft_calib;
 		delete m_tf_listener;
@@ -181,19 +184,21 @@ public:
 				return true;
 			}
 
-			geometry_msgs::Pose pose_;
-			pose_.position.x = pose(0);
-			pose_.position.y = pose(1);
-			pose_.position.z = pose(2);
-
-			tf::Quaternion q;
-			q.setRPY((double)pose(3), (double)pose(4), (double)pose(5));
-
-			tf::quaternionTFToMsg(q, pose_.orientation);
-
-			ROS_INFO("Executing pose%s: \n", ss.str().c_str());
-			std::cout << pose << std::endl;
-			m_group->setPoseTarget(pose_);
+//			geometry_msgs::Pose pose_;
+//			pose_.position.x = pose(0);
+//			pose_.position.y = pose(1);
+//			pose_.position.z = pose(2);
+//
+//			tf::Quaternion q;
+//			q.setRPY((double)pose(3), (double)pose(4), (double)pose(5));
+//
+//			tf::quaternionTFToMsg(q, pose_.orientation);
+//
+//			ROS_INFO("Executing pose%s: \n", ss.str().c_str());
+//			std::cout << pose << std::endl;
+//			m_group->setPoseTarget(pose_);
+			m_group->setPositionTarget((double)pose(0), (double)pose(1), (double)pose(2));
+			m_group->setRPYTarget((double)pose(3), (double)pose(4), (double)pose(5));
 
 		}
 		else // or execute random poses
@@ -280,7 +285,7 @@ public:
 		n_.setParam("/ft_calib/gripper_com_pose", COM_pose);
 
 		// dump the parameters to YAML file
-		std::string file = m_calib_file_dir + std::string("/ ") + m_calib_file_name;
+		std::string file = m_calib_file_dir + std::string("/") + m_calib_file_name;
 
 		// first create the directory
 		std::string command = std::string("mkdir -p ") + m_calib_file_dir;
@@ -289,6 +294,7 @@ public:
 		// now dump the yaml file
 		command.clear();
 		command = std::string("rosparam dump ") + file + std::string(" /ft_calib");
+		std::cout << command;
 		std::system(command.c_str());
 	}
 

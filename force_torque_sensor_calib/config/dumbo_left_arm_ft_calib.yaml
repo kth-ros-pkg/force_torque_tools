@@ -8,7 +8,7 @@ wait_time: 2.0
 moveit_group_name: 'left_arm'
 
 # Name of the frame ID we want for the gripper's center of mass
-gripper_com_child_frame_id: 'parallel_gripper_com'
+gripper_com_child_frame_id: '/parallel_gripper_com'
 
 # Name of the calib file
 calib_file_name: 'dumbo_left_arm_ft_calib_data.yaml'
@@ -20,7 +20,7 @@ calib_file_dir: '~/.ros/ft_calib'
 random_poses: true
 
 # number of random poses
-number_random_poses: 3
+number_random_poses: 1
 
 # the poses to which to move the arm in order to calibrate the F/T sensor
 # format: [x y z r p y]  in meters, radians
