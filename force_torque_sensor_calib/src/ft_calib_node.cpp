@@ -73,6 +73,7 @@ public:
 		topicSub_Accelerometer_ = n_.subscribe("imu", 1, &FTCalibNode::topicCallback_imu, this);
 
 		m_pose_counter = 0;
+		m_ft_counter = 0;
 
 		m_received_ft = false;
 		m_received_imu = false;
@@ -230,8 +231,10 @@ public:
 			}
 		}
 
+
 		m_pose_counter++;
 		m_group->move();
+		ROS_INFO("Finished executing pose %d", m_pose_counter-1);
 		return true;
 	}
 
@@ -336,13 +339,13 @@ public:
 	void addMeasurement()
 	{
 
-		m_ft_avg.wrench.force.x = -m_ft_avg.wrench.force.x/m_ft_counter;
-		m_ft_avg.wrench.force.y = -m_ft_avg.wrench.force.y/m_ft_counter;
-		m_ft_avg.wrench.force.z = -m_ft_avg.wrench.force.z/m_ft_counter;
+		m_ft_avg.wrench.force.x = -m_ft_avg.wrench.force.x/(double)m_ft_counter;
+		m_ft_avg.wrench.force.y = -m_ft_avg.wrench.force.y/(double)m_ft_counter;
+		m_ft_avg.wrench.force.z = -m_ft_avg.wrench.force.z/(double)m_ft_counter;
 
-		m_ft_avg.wrench.torque.x = -m_ft_avg.wrench.torque.x/m_ft_counter;
-		m_ft_avg.wrench.torque.y = -m_ft_avg.wrench.torque.y/m_ft_counter;
-		m_ft_avg.wrench.torque.z = -m_ft_avg.wrench.torque.z/m_ft_counter;
+		m_ft_avg.wrench.torque.x = -m_ft_avg.wrench.torque.x/(double)m_ft_counter;
+		m_ft_avg.wrench.torque.y = -m_ft_avg.wrench.torque.y/(double)m_ft_counter;
+		m_ft_avg.wrench.torque.z = -m_ft_avg.wrench.torque.z/(double)m_ft_counter;
 
 
 		m_ft_counter = 0;
