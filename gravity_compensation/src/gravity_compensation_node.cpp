@@ -72,8 +72,19 @@ public:
 		topicSub_ft_raw_ = n_.subscribe("ft_raw", 1, &GravityCompensationNode::topicCallback_ft_raw, this);
 
 		/// implementation of topics to publish
-		topicPub_ft_zeroed_ = n_.advertise<geometry_msgs::WrenchStamped> ("ft_zeroed", 1);
-		topicPub_ft_compensated_ = n_.advertise<geometry_msgs::WrenchStamped> ("ft_compensated", 1);
+		std::string ns;
+		if(n_.hasParam("ns"))
+		{
+			n_.getParam("ns", ns);
+			topicPub_ft_zeroed_ = n_.advertise<geometry_msgs::WrenchStamped> (ns+std::string("/ft_zeroed"), 1);
+			topicPub_ft_compensated_ = n_.advertise<geometry_msgs::WrenchStamped> (ns+std::string("/ft_compensated"), 1);
+		}
+
+		else
+		{
+			topicPub_ft_zeroed_ = n_.advertise<geometry_msgs::WrenchStamped> ("ft_zeroed", 1);
+			topicPub_ft_compensated_ = n_.advertise<geometry_msgs::WrenchStamped> ("ft_compensated", 1);
+		}
 	}
 
 	~GravityCompensationNode()
@@ -299,18 +310,19 @@ int main(int argc, char **argv)
 	}
 
 	// loop frequency
-	double loop_frequency;
-	g_comp_node.n_.param("loop_frequency", loop_frequency, 1000.0);
-	ros::Rate loop_rate(loop_frequency);
+	double loop_rate_;
+	g_comp_node.n_.param("loop_rate", loop_rate_, 1000.0);
+	ros::Rate loop_rate(loop_rate_);
 
 	// add a thread for publishing the gripper COM transform frame
 	boost::thread t_tf(boost::bind(&GravityCompensationNode::publish_gripper_com_tf, &g_comp_node));
 
-	ros::AsyncSpinner s(2);
-	s.start();
+//	ros::AsyncSpinner s(2);
+//	s.start();
 
 	while(ros::ok())
 	{
+		ros::spinOnce();
 		loop_rate.sleep();
 	}
 

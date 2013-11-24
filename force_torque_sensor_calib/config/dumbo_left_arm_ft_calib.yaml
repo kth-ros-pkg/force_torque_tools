@@ -7,9 +7,6 @@ wait_time: 2.0
 # Name of the moveit group
 moveit_group_name: 'left_arm'
 
-# Name of the frame ID we want for the gripper's center of mass
-gripper_com_child_frame_id: '/parallel_gripper_com'
-
 # Name of the calib file
 calib_file_name: 'dumbo_left_arm_ft_calib_data.yaml'
 

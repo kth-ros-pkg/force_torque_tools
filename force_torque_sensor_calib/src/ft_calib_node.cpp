@@ -110,19 +110,6 @@ public:
 			return false;
 		}
 
-		// Get the user defined child frame ID of the Center of Mass of the gripper
-		if(n_.hasParam("gripper_com_child_frame_id"))
-		{
-			n_.getParam("gripper_com_child_frame_id", m_gripper_com_child_frame_id);
-		}
-
-		else
-		{
-			ROS_ERROR("No gripper_com_child_frame_id parameter, shutting down node...");
-			n_.shutdown();
-			return false;
-		}
-
 		// Get the name of output calibration file
 		if(n_.hasParam("calib_file_name"))
 		{
@@ -297,7 +284,6 @@ public:
 		n_.setParam("/ft_calib/bias", bias);
 		n_.setParam("/ft_calib/gripper_mass", mass);
 		n_.setParam("/ft_calib/gripper_com_frame_id", m_ft_raw.header.frame_id.c_str());
-		n_.setParam("/ft_calib/gripper_com_child_frame_id", m_gripper_com_child_frame_id.c_str());
 		n_.setParam("/ft_calib/gripper_com_pose", COM_pose);
 
 		// dump the parameters to YAML file
@@ -465,9 +451,6 @@ private:
 	//	***** ROS parameters ***** //
 	// name of the moveit group
 	std::string m_moveit_group_name;
-
-	// user defined child frame id of gripper Center of Mass
-	std::string m_gripper_com_child_frame_id;
 
 	// name of output calibration file
 	std::string m_calib_file_name;
