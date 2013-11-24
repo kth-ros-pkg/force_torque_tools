@@ -20,10 +20,13 @@ calib_file_dir: '~/.ros/ft_calib'
 random_poses: false
 
 # number of random poses
-number_random_poses: 1
+number_random_poses: 0
 
 # the poses to which to move the arm in order to calibrate the F/T sensor
 # format: [x y z r p y]  in meters, radians
+# poses_frame_id sets the frame at which the poses are expressed
+poses_frame_id: 'arm_base_link'
+
 pose0: [-0.486, 0.367, -0.000, 1.571, 1.571, 3.130]
 pose1: [-0.486, 0.367, -0.000, 1.571, 0.8, 3.140]
 pose2: [-0.486, 0.367, -0.000, 1.571, 0.4, 3.140]

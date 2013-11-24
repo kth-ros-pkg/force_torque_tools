@@ -147,6 +147,18 @@ public:
 			m_calib_file_dir = std::string("~/.ros/ft_calib");
 		}
 
+		if(n_.hasParam("poses_frame_id"))
+		{
+			n_.getParam("poses_frame_id", m_poses_frame_id);
+		}
+
+		else
+		{
+			ROS_ERROR("No poses_frame_id parameter, shutting down node ...");
+			n_.shutdown();
+			return false;
+		}
+
 
 		// whether the user wants to use random poses
 		n_.param("random_poses", m_random_poses, false);
@@ -184,21 +196,22 @@ public:
 				return true;
 			}
 
-//			geometry_msgs::Pose pose_;
-//			pose_.position.x = pose(0);
-//			pose_.position.y = pose(1);
-//			pose_.position.z = pose(2);
-//
-//			tf::Quaternion q;
-//			q.setRPY((double)pose(3), (double)pose(4), (double)pose(5));
-//
-//			tf::quaternionTFToMsg(q, pose_.orientation);
-//
-//			ROS_INFO("Executing pose%s: \n", ss.str().c_str());
-//			std::cout << pose << std::endl;
-//			m_group->setPoseTarget(pose_);
-			m_group->setPositionTarget((double)pose(0), (double)pose(1), (double)pose(2));
-			m_group->setRPYTarget((double)pose(3), (double)pose(4), (double)pose(5));
+			geometry_msgs::Pose pose_;
+			pose_.position.x = pose(0);
+			pose_.position.y = pose(1);
+			pose_.position.z = pose(2);
+
+			tf::Quaternion q;
+			q.setRPY((double)pose(3), (double)pose(4), (double)pose(5));
+
+			tf::quaternionTFToMsg(q, pose_.orientation);
+
+			geometry_msgs::PoseStamped pose_stamped;
+			pose_stamped.pose = pose_;
+			pose_stamped.header.frame_id = m_poses_frame_id;
+			pose_stamped.header.stamp = ros::Time::now();
+
+			m_group->setPoseTarget(pose_stamped);
 
 		}
 		else // or execute random poses
@@ -459,6 +472,9 @@ private:
 	// name of output directory
 	// default: ~/.ros/ft_calib
 	std::string m_calib_file_dir;
+
+	// frame id of the poses to be executed
+	std::string m_poses_frame_id;
 
 	// if the user wants to execute just random poses
 	// default: false
