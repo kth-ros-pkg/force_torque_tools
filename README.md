@@ -6,6 +6,9 @@ Overview
 ---------------------------------------------
 Tools for gravity compensation and sensor calibration for wrist-mounted force-torque sensors in robot manipulators.
 
+* force_torque_sensor_calib: calibrates force-torque sensor bias, gripper mass and center of mass of the gripper.
+* gravity_compensation: performs gravity compensation to force-torque sensor measurements after calibrating with the  **force_torque_sensor_calib** package.
+
 
 Installing
 ---------------------------------------------
@@ -37,6 +40,8 @@ Compile your catkin workspace:
 force_torque_sensor_calib
 ---------------------------------------------
 
+### Overview ###
+
 This package can calibrate through least-squares the following parameters related to a **wrist-mounted force-torque sensor**:
 
     Bias of the F/T sensor
@@ -47,23 +52,29 @@ This package can calibrate through least-squares the following parameters relate
 Running this software assumes that you have an **accelerometer/imu** already calibrated with respect to the robot manipulator. It also assumes that you have a manipulator previously configured to use **MoveIt!**. 
 
 The software calibrates the F/T sensor by moving the manipulator into a number of different poses and using
-the resulting F/T sensor and accelerometer signals.
-Calibration can be done by either manually specifying the poses in the parameter server or executing N random poses.
+the resulting F/T sensor and accelerometer signals for computing a least-squares estimate of the parameters.
+Calibration can be done by either manually specifying explicitly the manipulator poses in the parameter server (parameters **pose0, pose1, pose2, ... poseN**) or by executing N random poses.
 
-You can look at the configuration/launch files in the `config` and `launch` folders of the force_torque_sensor_calib for examples on how to set the parameters and launch the software for your robot.
 
-### Running on CVAP's Dumbo Robot###
+### Running the calibration node ###
+Make sure that the robot is still and other objects don't obstruct the arms while they move into the calibration poses.
 
-Make sure that the robot is clear of any objects in its surroundings. To calibrate e.g. the left arm run:
-    roslaunch force_torque_sensor_calib dumbo_left_arm_ft_calib.launch
+You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to set the parameters and launch the software for your robot. For more details on the parameters required to launch the calibration node visit the [ROS wiki page] [1].
 
-You can look at the configuration/launch files in the `config` and `launch` folders of the force_torque_sensor_calib for examples on how to launch this software.
+The calibration software will produce a **yaml** calibration file that can later be used for gravity compensation. By default the file will be written in the **~/.ros/ft_calib/** directory.
+
+[1]: http://wiki.ros.org/force_torque_sensor_calib
+
 
 gravity_compensation
 ---------------------------------------------
-Once the F/T sensors have been calibrated using the **force_torque_sensor_calib** package, the yaml file that this package produces can be used as input parameters for gravity compensation.
+Compensates gravity forces measured by a force-torque sensor.
+Uses the **yaml** calibration file produced by the ''force_torque_sensor_calib'' package and gravity measurements given by an accelerometer.
 
-You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to launch this software with CVAP's Dumbo robot.
+You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to launch this software.
+
+For more details visit the package's [ROS wiki page] [1]. 
+[1]: http://wiki.ros.org/gravity_compensation
 
 
 References
