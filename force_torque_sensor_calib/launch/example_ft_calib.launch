@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node name="ft_calib" pkg="force_torque_sensor_calib" type="ft_calib_node" cwd="node" respawn="false" output="screen" >
+    <rosparam command="load" file="$(find force_torque_sensor_calib)/config/example_ft_calib_params.yaml"/>
+    <remap from="/ft_calib/ft_raw" to="/ft_sensor/ft_raw"/>
+    <remap from="/ft_calib/imu" to="/imu/data" />
+  </node>
+</launch>

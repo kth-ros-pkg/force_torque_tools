@@ -59,11 +59,12 @@ Calibration can be done by either manually specifying explicitly the manipulator
 ### Running the calibration node ###
 Make sure that the robot is still and other objects don't obstruct the arms while they move into the calibration poses.
 
-You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to set the parameters and launch the software for your robot. For more details on the parameters required to launch the calibration node visit the [ROS wiki page] [1].
+You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to set the parameters and launch the software for your robot. For more details on the parameters required to launch the calibration node visit the [ROS wiki page] [1] and the [tutorials page] [2].
 
 The calibration software will produce a **yaml** calibration file that can later be used for gravity compensation. By default the file will be written in the **~/.ros/ft_calib/** directory.
 
 [1]: http://wiki.ros.org/force_torque_sensor_calib
+[2]: http://wiki.ros.org/force_torque_tools/Tutorials
 
 
 gravity_compensation

@@ -119,7 +119,7 @@ public:
 		else
 		{
 			ROS_WARN("No calib_file_name parameter, setting to default 'ft_calib.yaml'");
-			m_calib_file_name = std::string("ft_calib.yaml");
+			m_calib_file_name = std::string("ft_calib_data.yaml");
 		}
 
 
