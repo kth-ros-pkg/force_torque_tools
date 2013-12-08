@@ -49,7 +49,7 @@ This package can calibrate through least-squares the following parameters relate
     Location of the center of mass of the attached gripper
 
 
-Running this software assumes that you have an **accelerometer/imu** already calibrated with respect to the robot manipulator. It also assumes that you have a manipulator previously configured to use **MoveIt!**. 
+Running this software assumes that you have an **accelerometer/imu** already calibrated with respect to the robot manipulator. It also assumes that you have a manipulator previously configured to be controlled through **MoveIt!**. 
 
 The software calibrates the F/T sensor by moving the manipulator into a number of different poses and using
 the resulting F/T sensor and accelerometer signals for computing a least-squares estimate of the parameters.
@@ -59,7 +59,7 @@ Calibration can be done by either manually specifying explicitly the manipulator
 ### Running the calibration node ###
 Make sure that the robot is still and other objects don't obstruct the arms while they move into the calibration poses.
 
-You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to set the parameters and launch the software for your robot. For more details on the parameters required to launch the calibration node visit the [ROS wiki page] [1] and the [tutorials page] [2].
+You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to set the parameters and launch the software for your robot. For more details on the parameters required to launch the calibration node visit the [ROS wiki page] [1] of the **force_torque_sensor_calib** package and the [tutorials page] [2].
 
 The calibration software will produce a **yaml** calibration file that can later be used for gravity compensation. By default the file will be written in the **~/.ros/ft_calib/** directory.
 
@@ -70,12 +70,12 @@ The calibration software will produce a **yaml** calibration file that can later
 gravity_compensation
 ---------------------------------------------
 Compensates gravity forces measured by a force-torque sensor.
-Uses the **yaml** calibration file produced by the ''force_torque_sensor_calib'' package and gravity measurements given by an accelerometer.
+Uses the **yaml** calibration file produced by the **force_torque_sensor_calib** package and gravity measurements given by an accelerometer.
 
 You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to launch this software.
 
-For more details visit the package's [ROS wiki page] [1]. 
-[1]: http://wiki.ros.org/gravity_compensation
+For more details on running the software visit the package's [ROS wiki page] [3] and the [tutorials page] [2].
+[3]: http://wiki.ros.org/gravity_compensation
 
 
 References
