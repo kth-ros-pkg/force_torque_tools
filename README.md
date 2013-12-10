@@ -70,7 +70,7 @@ The calibration software will produce a **yaml** calibration file that can later
 gravity_compensation
 ---------------------------------------------
 Compensates gravity forces measured by a force-torque sensor.
-Uses the **yaml** calibration file produced by the **force_torque_sensor_calib** package and gravity measurements given by an accelerometer.
+Uses the **yaml** calibration file produced by the **force_torque_sensor_calib** package and gravity measurements given by an accelerometer that has been previously calibrated to the frame of the robot.
 
 You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to launch this software.
 
