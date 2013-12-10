@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="node_name" default="gravity_compensation"/>
+  <arg name="calib_data_file" default="$(env HOME)/.ros/ft_calib/ft_calib_data.yaml"/>
+  <arg name="ft_raw" default="/ft_sensor/ft_raw"/>
+  <arg name="imu" default="/imu/data"/>
+  <arg name="loop_rate" default="1000.0"/>
+  <arg name="ns" default="/ft_sensor"/>
+  <arg name="gripper_com_child_frame_id" default="gripper_com"/>
+
+  <node name="$(arg node_name)" pkg="gravity_compensation" type="gravity_compensation_node" cwd="node" respawn="false" output="screen">
+    <rosparam command="load" file="$(arg calib_data_file)"/>
+    <remap from="$(arg node_name)/ft_raw" to="$(arg ft_raw)" />
+    <remap from="$(arg node_name)/imu" to="$(arg imu)" />
+    <param name="loop_rate" value="$(arg loop_rate)" />
+    <param name="ns" value="$(arg ns)"/>
+    <param name="gripper_com_child_frame_id" value="$(arg gripper_com_child_frame_id)"/>
+  </node>
+
+</launch>
