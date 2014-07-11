@@ -89,7 +89,7 @@ protected:
 
 	// measurement matrix based on "On-line Rigid Object Recognition and Pose Estimation
 	//  Based on Inertial Parameters", D. Kubus, T. Kroger, F. Wahl, IROS 2008
-	virtual Eigen::MatrixXd GetMeasurementMatrix(const geometry_msgs::Vector3Stamped &gravity);
+    virtual Eigen::MatrixXd getMeasurementMatrix(const geometry_msgs::Vector3Stamped &gravity);
 
 };
 }

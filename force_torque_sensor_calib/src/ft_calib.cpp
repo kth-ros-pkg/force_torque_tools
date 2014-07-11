@@ -62,7 +62,7 @@ void FTCalib::addMeasurement(const geometry_msgs::Vector3Stamped &gravity,
 
 	m_num_meas++;
 
-	Eigen::MatrixXd h = GetMeasurementMatrix(gravity);
+    Eigen::MatrixXd h = getMeasurementMatrix(gravity);
 	Eigen::VectorXd z = Eigen::Matrix<double, 6, 1>::Zero();
 	z(0) = ft_raw.wrench.force.x;
 	z(1) = ft_raw.wrench.force.y;
@@ -110,7 +110,7 @@ Eigen::VectorXd FTCalib::getCalib()
 }
 
 
-Eigen::MatrixXd FTCalib::GetMeasurementMatrix(const geometry_msgs::Vector3Stamped &gravity)
+Eigen::MatrixXd FTCalib::getMeasurementMatrix(const geometry_msgs::Vector3Stamped &gravity)
 {
 	KDL::Vector w = KDL::Vector::Zero();
 	KDL::Vector alpha = KDL::Vector::Zero();
