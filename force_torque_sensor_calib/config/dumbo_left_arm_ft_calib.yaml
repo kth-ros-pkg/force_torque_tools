@@ -2,7 +2,7 @@
 loop_rate: 650.0
 
 # waiting time after moving to each pose before taking F/T measurements
-wait_time: 2.0
+wait_time: 4.0
 
 # Name of the moveit group
 moveit_group_name: 'left_arm'
