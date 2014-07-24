@@ -35,6 +35,7 @@
 
 #include <ros/ros.h>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
@@ -122,17 +123,41 @@ public:
 			m_calib_file_name = std::string("ft_calib_data.yaml");
 		}
 
+        // Get the name of calibration file directory
+        if(n_.hasParam("calib_file_dir"))
+        {
+            n_.getParam("calib_file_dir", m_calib_file_dir);
+        }
 
-		// Get the name of calibration file directory
-		if(n_.hasParam("calib_file_dir"))
+        else
+        {
+            ROS_WARN("No calib_file_dir parameter, setting to default '~/.ros/ft_calib' ");
+            m_calib_file_dir = std::string("~/.ros/ft_calib");
+        }
+
+
+        // Get the name of file to store the gravity and F/T measurements
+        if(n_.hasParam("meas_file_name"))
+        {
+            n_.getParam("meas_file_name", m_meas_file_name);
+        }
+
+        else
+        {
+            ROS_WARN("No meas_file_name parameter, setting to default 'ft_calib_meas.txt'");
+            m_meas_file_name = std::string("ft_calib_meas.txt");
+        }
+
+        // Get the name of directory to save gravity and force-torque measurements
+        if(n_.hasParam("meas_file_dir"))
 		{
-			n_.getParam("calib_file_dir", m_calib_file_dir);
+            n_.getParam("meas_file_dir", m_meas_file_dir);
 		}
 
 		else
 		{
-			ROS_WARN("No calib_file_dir parameter, setting to default '~/.ros/ft_calib' ");
-			m_calib_file_dir = std::string("~/.ros/ft_calib");
+            ROS_WARN("No meas_file_dir parameter, setting to default '~/.ros/ft_calib' ");
+            m_meas_file_dir = std::string("~/.ros/ft_calib");
 		}
 
 		if(n_.hasParam("poses_frame_id"))
@@ -140,24 +165,54 @@ public:
 			n_.getParam("poses_frame_id", m_poses_frame_id);
 		}
 
-		else
-		{
-			ROS_ERROR("No poses_frame_id parameter, shutting down node ...");
-			n_.shutdown();
-			return false;
-		}
+        else
+        {
+            ROS_ERROR("No poses_frame_id parameter, shutting down node ...");
+            n_.shutdown();
+            return false;
+        }
 
 
-		// whether the user wants to use random poses
-		n_.param("random_poses", m_random_poses, false);
+        // whether the user wants to use random poses
+        n_.param("random_poses", m_random_poses, false);
 
-		// number of random poses
-		n_.param("number_random_poses", m_number_random_poses, 30);
+        // number of random poses
+        n_.param("number_random_poses", m_number_random_poses, 30);
 
 
-		return true;
-	}
-	// connects to the move arm servers
+        // initialize the file with gravity and F/T measurements
+
+        // expand the path
+        if (!m_meas_file_dir.empty() && m_meas_file_dir[0] == '~') {
+            assert(m_meas_file_dir.size() == 1 or m_meas_file_dir[1] == '/');  // or other error handling
+            char const* home = getenv("HOME");
+            if (home or (home = getenv("USERPROFILE"))) {
+                m_meas_file_dir.replace(0, 1, home);
+            }
+            else {
+                char const *hdrive = getenv("HOMEDRIVE"),
+                        *hm_meas_file_dir = getenv("HOMEPATH");
+                assert(hdrive);  // or other error handling
+                assert(hm_meas_file_dir);
+                m_meas_file_dir.replace(0, 1, std::string(hdrive) + hm_meas_file_dir);
+            }
+        }
+
+        std::ofstream meas_file;
+        meas_file.open((m_meas_file_dir + "/" + m_meas_file_name).c_str(), std::ios::out);
+
+        std::stringstream meas_file_header;
+
+        meas_file_header << "\% gravity , f/t measurements all expressed in F/T sensor frame\n";
+        meas_file_header << "\% [gx, gy, gz, fx, fy, fz, tx, ty, tz]\n";
+
+        meas_file << meas_file_header.str();
+
+        meas_file.close();
+
+        return true;
+    }
+    // connects to the move arm servers
 	void init()
 	{
 		m_group = new move_group_interface::MoveGroup(m_moveit_group_name);
@@ -299,6 +354,23 @@ public:
 		std::system(command.c_str());
 	}
 
+    // saves the gravity and force-torque measurements to a file for postprocessing
+    void saveMeasurements(geometry_msgs::Vector3Stamped gravity, geometry_msgs::WrenchStamped ft_meas)
+    {
+        std::ofstream meas_file;
+        meas_file.open((m_meas_file_dir + "/" + m_meas_file_name).c_str(), std::ios::out | std::ios::app);
+
+        std::stringstream meas_file_text;
+
+        meas_file_text << gravity.vector.x << " " << gravity.vector.y << " " << gravity.vector.z << " ";
+        meas_file_text << ft_meas.wrench.force.x << " " << ft_meas.wrench.force.y << " " << ft_meas.wrench.force.z << " ";
+        meas_file_text << ft_meas.wrench.torque.x << " " << ft_meas.wrench.torque.y << " " << ft_meas.wrench.torque.z << "\n";
+
+        meas_file << meas_file_text.str();
+
+        meas_file.close();
+    }
+
 	// finished moving the arm through the poses set in the config file
 	bool finished()
 	{
@@ -369,6 +441,7 @@ public:
 		}
 
 		m_ft_calib->addMeasurement(gravity_ft_frame, m_ft_avg);
+        saveMeasurements(gravity_ft_frame, m_ft_avg);
 	}
 
 	void getCalib(double &mass, Eigen::Vector3d &COM_pos, Eigen::Vector3d &f_bias, Eigen::Vector3d &t_bias)
@@ -458,6 +531,13 @@ private:
 	// name of output directory
 	// default: ~/.ros/ft_calib
 	std::string m_calib_file_dir;
+
+    // name of file with recorded gravity and F/T measurements
+    std::string m_meas_file_name;
+
+    // name of directory for saving gravity and F/T measurements
+    // default: ~/.ros/ft_calib
+    std::string m_meas_file_dir;
 
 	// frame id of the poses to be executed
 	std::string m_poses_frame_id;
