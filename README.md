@@ -49,7 +49,7 @@ This package can calibrate through least-squares the following parameters relate
     Location of the center of mass of the attached gripper
 
 
-Running this software assumes that you have an **accelerometer/imu** whose reference frame is already calibrated with respect to the robot manipulator. It also assumes that you have a manipulator previously configured to be controlled through **MoveIt!**. 
+Running this software assumes that you have an **accelerometer/imu** whose reference frame is already calibrated with respect to the e.g. base frame of the robot manipulator. It also assumes that you have a manipulator previously configured to be controlled through **MoveIt!**. 
 
 The software calibrates the F/T sensor by moving the manipulator into a number of different poses and using
 the resulting F/T sensor and accelerometer signals for computing a least-squares estimate of the parameters.
