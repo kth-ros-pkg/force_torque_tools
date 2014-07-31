@@ -49,7 +49,7 @@ This package can calibrate through least-squares the following parameters relate
     Location of the center of mass of the attached gripper
 
 
-Running this software assumes that you have an **accelerometer/imu** already calibrated with respect to the robot manipulator. It also assumes that you have a manipulator previously configured to be controlled through **MoveIt!**. 
+Running this software assumes that you have an **accelerometer/imu** whose reference frame is already calibrated with respect to the robot manipulator. It also assumes that you have a manipulator previously configured to be controlled through **MoveIt!**. 
 
 The software calibrates the F/T sensor by moving the manipulator into a number of different poses and using
 the resulting F/T sensor and accelerometer signals for computing a least-squares estimate of the parameters.
@@ -70,7 +70,7 @@ The calibration software will produce a **yaml** calibration file that can later
 gravity_compensation
 ---------------------------------------------
 Compensates gravity forces measured by a force-torque sensor.
-Uses the **yaml** calibration file produced by the **force_torque_sensor_calib** package and gravity measurements given by an accelerometer that has been previously calibrated to the frame of the robot.
+Uses the **yaml** calibration file produced by the **force_torque_sensor_calib** package and gravity measurements given by an accelerometer whose reference frame has been previously calibrated to the frame of the robot.
 
 You can look at the configuration/launch files in the `config` and `launch` folders for examples on how to launch this software.
 
