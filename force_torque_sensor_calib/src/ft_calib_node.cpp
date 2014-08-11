@@ -48,6 +48,7 @@
 #include <moveit/move_group_interface/move_group.h>
 #include <force_torque_sensor_calib/ft_calib.h>
 #include <eigen3/Eigen/Core>
+#include <vector>
 
 using namespace Calibration;
 
@@ -179,6 +180,9 @@ public:
         // number of random poses
         n_.param("number_random_poses", m_number_random_poses, 30);
 
+        // poses or joints
+        n_.param("use_joints", m_use_joints, false);
+
 
         // initialize the file with gravity and F/T measurements
 
@@ -239,22 +243,42 @@ public:
 				return true;
 			}
 
-			geometry_msgs::Pose pose_;
-			pose_.position.x = pose(0);
-			pose_.position.y = pose(1);
-			pose_.position.z = pose(2);
+			if(!m_use_joints)
+			{
+				ROS_INFO("Using poses");
+				geometry_msgs::Pose pose_;
+				pose_.position.x = pose(0);
+				pose_.position.y = pose(1);
+				pose_.position.z = pose(2);
 
-			tf::Quaternion q;
-			q.setRPY((double)pose(3), (double)pose(4), (double)pose(5));
+				tf::Quaternion q;
+				q.setRPY((double)pose(3), (double)pose(4), (double)pose(5));
 
-			tf::quaternionTFToMsg(q, pose_.orientation);
+				tf::quaternionTFToMsg(q, pose_.orientation);
 
-			geometry_msgs::PoseStamped pose_stamped;
-			pose_stamped.pose = pose_;
-			pose_stamped.header.frame_id = m_poses_frame_id;
-			pose_stamped.header.stamp = ros::Time::now();
+				geometry_msgs::PoseStamped pose_stamped;
+				pose_stamped.pose = pose_;
+				pose_stamped.header.frame_id = m_poses_frame_id;
+				pose_stamped.header.stamp = ros::Time::now();
 
-			m_group->setPoseTarget(pose_stamped);
+				m_group->setPoseTarget(pose_stamped);
+			}
+
+			else
+			{
+				ROS_INFO("Using joints");
+				std::vector<double> group_variable_values(6);
+
+
+				group_variable_values[0] = (double)pose(0);
+				group_variable_values[1] = (double)pose(1);
+				group_variable_values[2] = (double)pose(2);
+				group_variable_values[3] = (double)pose(3);
+				group_variable_values[4] = (double)pose(4);
+				group_variable_values[5] = (double)pose(5);
+
+				m_group->setJointValueTarget(group_variable_values);
+			}
 
 		}
 		else // or execute random poses
@@ -275,6 +299,7 @@ public:
 
 
 		m_pose_counter++;
+		m_group->setPlanningTime(10.0);
 		m_group->move();
 		ROS_INFO("Finished executing pose %d", m_pose_counter-1);
 		return true;
@@ -549,6 +574,8 @@ private:
 	// number of random poses
 	// default: 30
 	int m_number_random_poses;
+
+	bool m_use_joints;
 
 };
 
