@@ -43,6 +43,7 @@
 #include <tf/transform_broadcaster.h>
 #include <eigen_conversions/eigen_msg.h>
 #include <boost/thread.hpp>
+#include <std_srvs/Empty.h>
 
 
 class GravityCompensationNode
@@ -57,6 +58,8 @@ public:
 	ros::Publisher topicPub_ft_zeroed_;
 	ros::Publisher topicPub_ft_compensated_;
 
+    ros::ServiceServer calibrate_bias_srv_server_;
+
 	tf::TransformBroadcaster tf_br_;
 
 
@@ -66,10 +69,16 @@ public:
 		m_g_comp_params  = new GravityCompensationParams();
 		m_g_comp = NULL;
 		m_received_imu = false;
+        m_calibrate_bias = false;
+        m_calib_measurements = 0;
+        m_ft_bias = Eigen::Matrix<double, 6, 1>::Zero();
 
 		// subscribe to accelerometer topic and raw F/T sensor topic
 		topicSub_imu_ = n_.subscribe("imu", 1, &GravityCompensationNode::topicCallback_imu, this);
 		topicSub_ft_raw_ = n_.subscribe("ft_raw", 1, &GravityCompensationNode::topicCallback_ft_raw, this);
+
+        // bias calibration service
+        calibrate_bias_srv_server_ = n_.advertiseService("calibrate_bias", &GravityCompensationNode::calibrateBiasSrvCallback, this);
 
 		/// implementation of topics to publish
 		std::string ns;
@@ -243,6 +252,30 @@ public:
 	{
 		static int error_msg_count=0;
 
+        if(m_calibrate_bias)
+        {
+            if(m_calib_measurements++<100)
+            {
+                m_ft_bias(0) += msg->wrench.force.x;
+                m_ft_bias(1) += msg->wrench.force.y;
+                m_ft_bias(2) += msg->wrench.force.z;
+                m_ft_bias(3) += msg->wrench.torque.x;
+                m_ft_bias(4) += msg->wrench.torque.y;
+                m_ft_bias(5) += msg->wrench.torque.z;
+            }
+
+            // set the new bias
+            if(m_calib_measurements == 100)
+            {
+                m_ft_bias = m_ft_bias/100;
+                m_g_comp_params->setBias(m_g_comp_params->getBias() + m_ft_bias);
+                m_ft_bias = Eigen::Matrix<double, 6, 1>::Zero();
+                m_calibrate_bias = false;
+                m_calib_measurements = 0;
+            }
+
+        }
+
 		if(!m_received_imu)
 		{
 			return;
@@ -287,6 +320,15 @@ public:
 		}
 	}
 
+    // only to be called when the robot is standing still and
+    // while not holding anything / applying any forces
+    bool calibrateBiasSrvCallback(std_srvs::Empty::Request &req,
+                                  std_srvs::Empty::Response &res)
+    {
+        m_calibrate_bias = true;
+        return true;
+    }
+
 private:
 
 	GravityCompensationParams *m_g_comp_params;
@@ -294,6 +336,10 @@ private:
 	sensor_msgs::Imu m_imu;
 	bool m_received_imu;
 	double m_gripper_com_broadcast_frequency;
+
+    bool m_calibrate_bias;
+    unsigned int m_calib_measurements;
+    Eigen::Matrix<double, 6, 1> m_ft_bias;
 
 };
 
