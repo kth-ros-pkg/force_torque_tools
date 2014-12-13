@@ -252,30 +252,6 @@ public:
 	{
 		static int error_msg_count=0;
 
-        if(m_calibrate_bias)
-        {
-            if(m_calib_measurements++<100)
-            {
-                m_ft_bias(0) += msg->wrench.force.x;
-                m_ft_bias(1) += msg->wrench.force.y;
-                m_ft_bias(2) += msg->wrench.force.z;
-                m_ft_bias(3) += msg->wrench.torque.x;
-                m_ft_bias(4) += msg->wrench.torque.y;
-                m_ft_bias(5) += msg->wrench.torque.z;
-            }
-
-            // set the new bias
-            if(m_calib_measurements == 100)
-            {
-                m_ft_bias = m_ft_bias/100;
-                m_g_comp_params->setBias(m_g_comp_params->getBias() + m_ft_bias);
-                m_ft_bias = Eigen::Matrix<double, 6, 1>::Zero();
-                m_calibrate_bias = false;
-                m_calib_measurements = 0;
-            }
-
-        }
-
 		if(!m_received_imu)
 		{
 			return;
@@ -295,6 +271,30 @@ public:
 
 		geometry_msgs::WrenchStamped ft_compensated;
 		m_g_comp->Compensate(ft_zeroed, m_imu, ft_compensated);
+
+        if(m_calibrate_bias)
+        {
+            if(m_calib_measurements++<100)
+            {
+                m_ft_bias(0) += ft_compensated.wrench.force.x;
+                m_ft_bias(1) += ft_compensated.wrench.force.y;
+                m_ft_bias(2) += ft_compensated.wrench.force.z;
+                m_ft_bias(3) += ft_compensated.wrench.torque.x;
+                m_ft_bias(4) += ft_compensated.wrench.torque.y;
+                m_ft_bias(5) += ft_compensated.wrench.torque.z;
+            }
+
+            // set the new bias
+            if(m_calib_measurements == 100)
+            {
+                m_ft_bias = m_ft_bias/100;
+                m_g_comp_params->setBias(m_g_comp_params->getBias() + m_ft_bias);
+                m_calibrate_bias = false;
+                m_calib_measurements = 0;
+            }
+
+        }
+
 		topicPub_ft_compensated_.publish(ft_compensated);
 	}
 
@@ -326,6 +326,7 @@ public:
                                   std_srvs::Empty::Response &res)
     {
         m_calibrate_bias = true;
+        m_ft_bias = Eigen::Matrix<double, 6, 1>::Zero();
         return true;
     }
 
