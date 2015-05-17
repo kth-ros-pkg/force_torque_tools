@@ -2,8 +2,8 @@
 Changelog for package force_torque_sensor_calib
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2015-05-17)
+------------------
 * Compilable setting on ROS Indigo.
 * fixed yaml files
 * added saving of gravity and force-torque measurements to text file

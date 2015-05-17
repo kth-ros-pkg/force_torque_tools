@@ -2,8 +2,8 @@
 Changelog for package force_torque_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2015-05-17)
+------------------
 * (Feature) ROS Indigo compilation.
 * (Feature) added check for imu message timestamp
 * (Fix) fixed launch file to accept arguments

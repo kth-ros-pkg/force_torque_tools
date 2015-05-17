@@ -2,8 +2,8 @@
 Changelog for package gravity_compensation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2015-05-17)
+------------------
 * Compilable setting on ROS Indigo.
 * fixed launch file to accept arguments
   put an example calibration data file in the force_torque_sensor_calib package
