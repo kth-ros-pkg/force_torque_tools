@@ -4,7 +4,6 @@
   <description>
     Compensates gravity forces on the gripper of the robot so that force-torque signals are zeroed. Assumes previously calibrated accelerometer and F/T sensor.
   </description>
-  <maintainer email="fevb@kth.se">Francisco Vina</maintainer>
   <license>BSD</license>
 
   <url type="website">http://wiki.ros.org/gravity_compensation</url>
