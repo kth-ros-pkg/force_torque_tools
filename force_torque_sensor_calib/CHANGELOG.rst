@@ -2,6 +2,11 @@
 Changelog for package force_torque_sensor_calib
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add missing install rules
+* Contributors: Isaac IY Saito
+
 1.0.1 (2015-05-17)
 ------------------
 * Compilable setting on ROS Indigo.

@@ -2,6 +2,12 @@
 Changelog for package force_torque_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [fix] Add missing install rules
+* [sys] Redundant maintainer names
+* Contributors: Isaac IY Saito
+
 1.0.1 (2015-05-17)
 ------------------
 * (Feature) ROS Indigo compilation.
