@@ -1,6 +1,6 @@
 <package>
  <name>force_torque_sensor_calib</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <description>
     Calibrates the offsets of F/T sensors and the mass and position of the COM of gripper attached to the F/T sensor. Uses readings from an accelerometer that has been calibrated to the robot frame.
   </description>

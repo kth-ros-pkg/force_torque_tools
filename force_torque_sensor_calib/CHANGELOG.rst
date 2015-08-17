@@ -2,8 +2,8 @@
 Changelog for package force_torque_sensor_calib
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2015-08-17)
+------------------
 * Add missing install rules
 * Contributors: Isaac IY Saito
 

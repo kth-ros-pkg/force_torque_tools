@@ -2,8 +2,8 @@
 Changelog for package force_torque_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2015-08-17)
+------------------
 * [fix] Add missing install rules
 * [sys] Redundant maintainer names
 * Contributors: Isaac IY Saito
