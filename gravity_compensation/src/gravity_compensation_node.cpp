@@ -43,6 +43,7 @@
 #include <tf/transform_broadcaster.h>
 #include <eigen_conversions/eigen_msg.h>
 #include <boost/thread.hpp>
+#include <std_srvs/Empty.h>
 
 
 class GravityCompensationNode
@@ -57,6 +58,8 @@ public:
 	ros::Publisher topicPub_ft_zeroed_;
 	ros::Publisher topicPub_ft_compensated_;
 
+    ros::ServiceServer calibrate_bias_srv_server_;
+
 	tf::TransformBroadcaster tf_br_;
 
 
@@ -66,10 +69,16 @@ public:
 		m_g_comp_params  = new GravityCompensationParams();
 		m_g_comp = NULL;
 		m_received_imu = false;
+        m_calibrate_bias = false;
+        m_calib_measurements = 0;
+        m_ft_bias = Eigen::Matrix<double, 6, 1>::Zero();
 
 		// subscribe to accelerometer topic and raw F/T sensor topic
 		topicSub_imu_ = n_.subscribe("imu", 1, &GravityCompensationNode::topicCallback_imu, this);
 		topicSub_ft_raw_ = n_.subscribe("ft_raw", 1, &GravityCompensationNode::topicCallback_ft_raw, this);
+
+        // bias calibration service
+        calibrate_bias_srv_server_ = n_.advertiseService("calibrate_bias", &GravityCompensationNode::calibrateBiasSrvCallback, this);
 
 		/// implementation of topics to publish
 		std::string ns;
@@ -262,6 +271,30 @@ public:
 
 		geometry_msgs::WrenchStamped ft_compensated;
 		m_g_comp->Compensate(ft_zeroed, m_imu, ft_compensated);
+
+        if(m_calibrate_bias)
+        {
+            if(m_calib_measurements++<100)
+            {
+                m_ft_bias(0) += ft_compensated.wrench.force.x;
+                m_ft_bias(1) += ft_compensated.wrench.force.y;
+                m_ft_bias(2) += ft_compensated.wrench.force.z;
+                m_ft_bias(3) += ft_compensated.wrench.torque.x;
+                m_ft_bias(4) += ft_compensated.wrench.torque.y;
+                m_ft_bias(5) += ft_compensated.wrench.torque.z;
+            }
+
+            // set the new bias
+            if(m_calib_measurements == 100)
+            {
+                m_ft_bias = m_ft_bias/100;
+                m_g_comp_params->setBias(m_g_comp_params->getBias() + m_ft_bias);
+                m_calibrate_bias = false;
+                m_calib_measurements = 0;
+            }
+
+        }
+
 		topicPub_ft_compensated_.publish(ft_compensated);
 	}
 
@@ -287,6 +320,16 @@ public:
 		}
 	}
 
+    // only to be called when the robot is standing still and
+    // while not holding anything / applying any forces
+    bool calibrateBiasSrvCallback(std_srvs::Empty::Request &req,
+                                  std_srvs::Empty::Response &res)
+    {
+        m_calibrate_bias = true;
+        m_ft_bias = Eigen::Matrix<double, 6, 1>::Zero();
+        return true;
+    }
+
 private:
 
 	GravityCompensationParams *m_g_comp_params;
@@ -294,6 +337,10 @@ private:
 	sensor_msgs::Imu m_imu;
 	bool m_received_imu;
 	double m_gripper_com_broadcast_frequency;
+
+    bool m_calibrate_bias;
+    unsigned int m_calib_measurements;
+    Eigen::Matrix<double, 6, 1> m_ft_bias;
 
 };
 
