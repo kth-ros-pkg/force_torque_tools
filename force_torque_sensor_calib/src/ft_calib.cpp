@@ -35,7 +35,7 @@
 
 #include <ros/ros.h>
 #include <force_torque_sensor_calib/ft_calib.h>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <kdl/frameacc.hpp>
 #include <kdl/frames.hpp>
 
