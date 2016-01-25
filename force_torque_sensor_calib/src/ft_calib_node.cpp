@@ -47,7 +47,7 @@
 #include <sensor_msgs/Imu.h>
 #include <moveit/move_group_interface/move_group.h>
 #include <force_torque_sensor_calib/ft_calib.h>
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
 
 using namespace Calibration;
 

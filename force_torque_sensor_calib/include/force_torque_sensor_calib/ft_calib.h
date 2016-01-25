@@ -47,7 +47,7 @@
 #define FTCALIB_H_
 #include <geometry_msgs/Vector3Stamped.h>
 #include <geometry_msgs/WrenchStamped.h>
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
 
 
 // Least Squares calibration of bias of FT sensor and the mass and location of the COM of the gripper
