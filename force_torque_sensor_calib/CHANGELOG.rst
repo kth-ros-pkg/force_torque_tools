@@ -2,6 +2,11 @@
 Changelog for package force_torque_sensor_calib
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [sys] Updated for jade and k-turtle eigen dependency (`#12 <https://github.com/kth-ros-pkg/force_torque_tools/pull/12>`_ and discussion `#11 <https://github.com/kth-ros-pkg/force_torque_tools/issues/11>`_)
+* Contributors: Aris Synodinos
+
 1.0.2 (2015-08-17)
 ------------------
 * Add missing install rules
