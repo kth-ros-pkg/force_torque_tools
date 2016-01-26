@@ -1,6 +1,6 @@
 <package>
  <name>gravity_compensation</name>
-  <version>1.0.2</version>
+  <version>1.1.0</version>
   <description>
     Compensates gravity forces on the gripper of the robot so that force-torque signals are zeroed. Assumes previously calibrated accelerometer and F/T sensor.
   </description>
