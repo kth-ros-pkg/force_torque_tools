@@ -216,6 +216,7 @@ public:
 	void init()
 	{
 		m_group = new moveit::planning_interface::MoveGroupInterface(m_moveit_group_name);
+		m_group->setPlannerId("RRTConnectkConfigDefault");
 	}
 
 
