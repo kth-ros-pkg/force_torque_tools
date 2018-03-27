@@ -45,7 +45,7 @@
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include <sensor_msgs/Imu.h>
-#include <moveit/move_group_interface/move_group.h>
+#include <moveit/move_group_interface/move_group_interface.h>
 #include <force_torque_sensor_calib/ft_calib.h>
 #include <eigen3/Eigen/Core>
 
@@ -215,7 +215,7 @@ public:
     // connects to the move arm servers
 	void init()
 	{
-		m_group = new move_group_interface::MoveGroup(m_moveit_group_name);
+		m_group = new moveit::planning_interface::MoveGroupInterface(m_moveit_group_name);
 	}
 
 
@@ -499,7 +499,7 @@ public:
 
 private:
 
-	move_group_interface::MoveGroup *m_group;
+	moveit::planning_interface::MoveGroupInterface *m_group;
 
 	unsigned int m_pose_counter;
 	unsigned int m_ft_counter;
