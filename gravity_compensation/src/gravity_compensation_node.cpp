@@ -77,8 +77,8 @@ public:
 		topicSub_imu_ = n_.subscribe("imu", 1, &GravityCompensationNode::topicCallback_imu, this);
 		topicSub_ft_raw_ = n_.subscribe("ft_raw", 1, &GravityCompensationNode::topicCallback_ft_raw, this);
 
-        // bias calibration service
-        calibrate_bias_srv_server_ = n_.advertiseService("calibrate_bias", &GravityCompensationNode::calibrateBiasSrvCallback, this);
+		// bias calibration service
+		calibrate_bias_srv_server_ = n_.advertiseService("calibrate_bias", &GravityCompensationNode::calibrateBiasSrvCallback, this);
 
 		/// implementation of topics to publish
 		std::string ns;
@@ -252,30 +252,6 @@ public:
 	{
 		static int error_msg_count=0;
 
-        if(m_calibrate_bias)
-        {
-            if(m_calib_measurements++<100)
-            {
-                m_ft_bias(0) += msg->wrench.force.x;
-                m_ft_bias(1) += msg->wrench.force.y;
-                m_ft_bias(2) += msg->wrench.force.z;
-                m_ft_bias(3) += msg->wrench.torque.x;
-                m_ft_bias(4) += msg->wrench.torque.y;
-                m_ft_bias(5) += msg->wrench.torque.z;
-            }
-
-            // set the new bias
-            if(m_calib_measurements == 100)
-            {
-                m_ft_bias = m_ft_bias/100;
-                m_g_comp_params->setBias(m_g_comp_params->getBias() + m_ft_bias);
-                m_ft_bias = Eigen::Matrix<double, 6, 1>::Zero();
-                m_calibrate_bias = false;
-                m_calib_measurements = 0;
-            }
-
-        }
-
 		if(!m_received_imu)
 		{
 			return;
@@ -296,6 +272,29 @@ public:
 		geometry_msgs::WrenchStamped ft_compensated;
 		m_g_comp->Compensate(ft_zeroed, m_imu, ft_compensated);
 		topicPub_ft_compensated_.publish(ft_compensated);
+
+		if(m_calibrate_bias)
+		{
+			if(m_calib_measurements < 100)
+			{
+				m_ft_bias(0) += ft_compensated.wrench.force.x;
+				m_ft_bias(1) += ft_compensated.wrench.force.y;
+				m_ft_bias(2) += ft_compensated.wrench.force.z;
+				m_ft_bias(3) += ft_compensated.wrench.torque.x;
+				m_ft_bias(4) += ft_compensated.wrench.torque.y;
+				m_ft_bias(5) += ft_compensated.wrench.torque.z;
+				m_calib_measurements++;
+			}
+			else
+			{
+				// set the new bias
+				m_ft_bias = m_ft_bias/(m_calib_measurements + 1);
+				m_g_comp_params->setBias(m_g_comp_params->getBias() + m_ft_bias);
+				m_ft_bias = Eigen::Matrix<double, 6, 1>::Zero();
+				m_calibrate_bias = false;
+				m_calib_measurements = 0;
+			}
+		}
 	}
 
 	// thread function for publishing the gripper center of mass transform
@@ -377,4 +376,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
