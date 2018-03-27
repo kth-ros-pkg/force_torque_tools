@@ -2,6 +2,13 @@
 Changelog for package gravity_compensation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.0 (2018-03-27)
+------------------
+* Update maintainer information
+
+1.1.0 (2016-01-25)
+------------------
+
 1.0.2 (2015-08-17)
 ------------------
 * [fix] Add missing install rules

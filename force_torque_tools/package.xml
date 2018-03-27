@@ -1,6 +1,6 @@
 <package>
   <name>force_torque_tools</name>
-  <version>1.0.2</version>
+  <version>1.2.0</version>
   <description>
     Tools for gravity compensation and force-torque sensor calibration.
   </description>
@@ -9,7 +9,7 @@
   <url>http://wiki.ros.org/force_torque_tools</url>
 
   <author email="fevb@kth.se">Francisco Vina</author>
-  <maintainer email="fevb@kth.se">Francisco Vina</maintainer>
+  <maintainer email="diogoa@kth.se">Diogo Almeida</maintainer>
 
   <buildtool_depend>catkin</buildtool_depend>
 
