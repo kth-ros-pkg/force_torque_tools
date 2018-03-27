@@ -254,6 +254,7 @@ public:
 
 		if(!m_received_imu)
 		{
+			ROS_ERROR("No Imu reading");
 			return;
 		}
 
