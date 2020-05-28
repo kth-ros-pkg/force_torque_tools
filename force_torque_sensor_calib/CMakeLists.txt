@@ -16,7 +16,7 @@ endif()
 find_package(Boost REQUIRED system filesystem date_time thread)
 
 catkin_package(
-  DEPENDS eigen
+  DEPENDS EIGEN3
   CATKIN_DEPENDS roscpp sensor_msgs tf geometry_msgs moveit_core moveit_ros_planning moveit_ros_planning_interface eigen tf_conversions eigen_conversions
   INCLUDE_DIRS include
   LIBRARIES
