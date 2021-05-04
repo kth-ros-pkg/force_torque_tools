@@ -73,7 +73,9 @@ bool GravityCompensation::Compensate(const geometry_msgs::WrenchStamped &ft_zero
 {
 
     geometry_msgs::Vector3Stamped g;
-    g.vector = gravity.linear_acceleration;
+    g.vector.x = -gravity.linear_acceleration.x; // IMU will measure gravity in the opposite direction from F/T sensor, check https://github.com/kth-ros-pkg/force_torque_tools/pull/18
+    g.vector.y = -gravity.linear_acceleration.y;
+    g.vector.z = -gravity.linear_acceleration.z;
     g.header = gravity.header;
     g.header.stamp = ros::Time();
 
