@@ -425,7 +425,9 @@ public:
 		geometry_msgs::Vector3Stamped gravity;
 		gravity.header.stamp = ros::Time();
 		gravity.header.frame_id = m_imu.header.frame_id;
-		gravity.vector = m_imu.linear_acceleration;
+		gravity.vector.x = -m_imu.linear_acceleration.x; // IMU will measure gravity in the opposite direction from F/T sensor, check https://github.com/kth-ros-pkg/force_torque_tools/pull/18
+		gravity.vector.y = -m_imu.linear_acceleration.y;
+		gravity.vector.z = -m_imu.linear_acceleration.z;
 
 		geometry_msgs::Vector3Stamped gravity_ft_frame;
 
